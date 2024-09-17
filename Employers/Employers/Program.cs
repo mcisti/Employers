@@ -5,61 +5,67 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Employers
+namespace EmployeeManagement
 {
-    public class tulajdonsagok
+    public class Employee
     {
-        public int azonosito { get; set; }
-        public string nev { get; set; }
-        public int kor { get; set; }
-        public int kereset { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int Salary { get; set; }
 
-
-        public tulajdonsagok(string sor)
+        public Employee(string dataLine)
         {
-            string[] darabok = sor.Split(',');
-            this.azonosito = Convert.ToInt32(darabok[0]);
-            this.nev = darabok[1];
-            this.kor = Convert.ToInt32(darabok[2]);
-            this.kereset = Convert.ToInt32(darabok[3]);
+            var parts = dataLine.Split(',');
+            Id = int.Parse(parts[0]);
+            Name = parts[1];
+            Age = int.Parse(parts[2]);
+            Salary = int.Parse(parts[3]);
         }
     }
-
 
     internal class Program
     {
         static void Main(string[] args)
         {
-            List<tulajdonsagok> tulajdonsag = new List<tulajdonsagok>();
-            StreamReader sr = new StreamReader("tulajdonsagok_100sor.txt");
+            var employees = new List<Employee>();
 
-            Console.Write("3. feladat" + '\n');
-            Console.WriteLine("Az összes alkalmazott neve: ");
-            foreach (var item in tulajdonsag)
+            using (var reader = new StreamReader("employee_data_100_lines.txt"))
             {
-                Console.WriteLine(item.nev);
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    employees.Add(new Employee(line));
+                }
             }
 
-            Console.Write("4. feladat" + '\n');
-
-            var maxKereset = tulajdonsag.Max(d => d.kereset);
-            var legjobbanKeresok = tulajdonsag.Where(d => d.kereset == maxKereset);
-
-            foreach (var item in tulajdonsag)
+            Console.WriteLine("3. Task");
+            Console.WriteLine("All employee names:");
+            foreach (var emp in employees)
             {
-                Console.WriteLine(item.azonosito + item.nev);
+                Console.WriteLine(emp.Name);
             }
 
-            Console.Write("5. feladat" + '\n');
-            var nyugdijhozKozeli = tulajdonsag.Where(d => 65 - d.kor <= 10);
+            Console.WriteLine("\n4. Task");
+            var highestSalary = employees.Max(e => e.Salary);
+            var topEarners = employees.Where(e => e.Salary == highestSalary);
 
-            foreach (var item in tulajdonsag)
+            foreach (var emp in topEarners)
             {
-                Console.WriteLine(item.nev + item.kor);
+                Console.WriteLine($"{emp.Id} {emp.Name}");
             }
-            Console.Write("6. feladat" + '\n');
-            var feletteKereset = tulajdonsag.Count(d => d.kereset > 50000);
-            Console.WriteLine(feletteKereset);
+
+            Console.WriteLine("\n5. Task");
+            var nearRetirement = employees.Where(e => 65 - e.Age <= 10);
+
+            foreach (var emp in nearRetirement)
+            {
+                Console.WriteLine($"{emp.Name} {emp.Age}");
+            }
+
+            Console.WriteLine("\n6. Task");
+            var highEarnersCount = employees.Count(e => e.Salary > 50000);
+            Console.WriteLine(highEarnersCount);
         }
     }
 }
